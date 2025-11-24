@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check-in Boda</title>
+    <style>
+        body { font-family: system-ui, sans-serif; background: #111; color: white; margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .container { width: 100%; max-width: 500px; padding: 15px; box-sizing: border-box; }
+        
+        /* Tabs */
+        .tabs { display: flex; margin-bottom: 15px; background: #222; border-radius: 10px; padding: 4px; }
+        .tab { flex: 1; padding: 12px; text-align: center; cursor: pointer; border-radius: 8px; color: #888; font-weight: 600; }
+        .tab.active { background: #333; color: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
+
+        /* Views */
+        #scanner-view, #search-view { display: none; }
+        .active-view { display: block !important; }
+
+        /* Scanner UI */
+        #reader { width: 100%; border-radius: 12px; overflow: hidden; background: #000; border: 1px solid #333; min-height: 300px; }
+        
+        /* Search UI */
+        .search-box { display: flex; gap: 10px; margin-bottom: 20px; }
+        input { flex: 1; padding: 15px; border-radius: 8px; border: none; font-size: 1rem; background: #222; color: white; outline: none; }
+        .btn-search { padding: 0 20px; background: #B8860B; border: none; border-radius: 8px; color: white; cursor: pointer; font-weight: bold; }
+        
+        .result-item { background: #222; padding: 15px; margin-bottom: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #333; }
+        .btn-in { background: #4CAF50; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .btn-in:disabled { background: #444; color: #888; cursor: not-allowed; }
+
+        /* Results Display */
+        #scan-result { margin-top: 15px; padding: 20px; border-radius: 10px; text-align: center; font-weight: bold; font-size: 1.2rem; display: none; }
+        .success { background: #e8f5e9; color: #2e7d32; border: 2px solid #4CAF50; }
+        .denied { background: #ffebee; color: #c62828; border: 2px solid #e57373; }
+        .already { background: #fff8e1; color: #f57f17; border: 2px solid #ffb74d; }
+
+        .stats { display: flex; justify-content: space-between; margin-top: 20px; background: #222; padding: 15px; border-radius: 10px; font-size: 0.9rem; border: 1px solid #333; }
+        .start-btn { width:100%; padding:15px; margin-top:10px; background:#333; color:white; border:none; border-radius:8px; font-weight:bold; font-size:1rem; cursor:pointer; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2 style="text-align:center; color:#B8860B; margin: 5px 0 15px;">ACCESO BODA</h2>
+    
+    <div class="tabs">
+        <div class="tab active" onclick="switchTab('scanner')">📸 Escáner</div>
+        <div class="tab" onclick="switchTab('search')">🔍 Buscar</div>
+    </div>
+
+    <div id="scanner-view" class="active-view">
+        <div id="reader"></div>
+        <button id="start-btn" class="start-btn" onclick="startScanner()">ACTIVAR CÁMARA</button>
+    </div>
+
+    <div id="search-view">
+        <div class="search-box">
+            <input type="text" id="search-input" placeholder="Buscar apellido...">
+            <button class="btn-search" onclick="manualSearch()">IR</button>
+        </div>
+        <div id="search-results"></div>
+    </div>
+
+    <div id="scan-result"></div>
+
+    <div class="stats">
+        <span>Total: <b id="total">0</b></span>
+        <span>Dentro: <b id="success">0</b></span>
+        <button onclick="resetStats()" style="background:transparent; border:none; color:#666;">🗑️</button>
+    </div>
+</div>
+
+<script src="html5-qrcode.min.js"></script>
+<script src="checkin.js"></script>
+
+<script>
+    function switchTab(tab) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.active-view').forEach(v => v.classList.remove('active-view'));
+        
+        if(tab === 'scanner') {
+            document.querySelector('.tab:first-child').classList.add('active');
+            document.getElementById('scanner-view').classList.add('active-view');
+        } else {
+            document.querySelector('.tab:last-child').classList.add('active');
+            document.getElementById('search-view').classList.add('active-view');
+            if(typeof html5QrcodeScanner !== 'undefined' && html5QrcodeScanner) {
+                html5QrcodeScanner.pause();
+            }
+        }
+    }
+</script>
+</body>
+</html>

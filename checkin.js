@@ -1,5 +1,5 @@
 // 👇 PEGA TU URL
-const API_URL = "https://script.google.com/macros/s/AKfycbzALMyxg0lU8ab1ImJx9cMBaeu8_0tTqeyfH_HKBpEiGZcb-HAaMQ_SeZHxO9ChbRds/exec"; 
+const API_URL = "https://script.google.com/macros/s/AKfycbwV574PX3AlK-KHR_uNiZjq79v59rXL8hz5RSHRjDBe2BfM1Ionnrr-EEnpjeuReslD/exec"; 
 
 let html5QrcodeScanner = null;
 let audioContext = null;

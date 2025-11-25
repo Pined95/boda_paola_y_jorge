@@ -2,50 +2,131 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Check-in Boda</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Check-in P&J</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&family=Cinzel:wght@600&display=swap" rel="stylesheet">
+
     <style>
-        body { font-family: system-ui, sans-serif; background: #111; color: white; margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-        .container { width: 100%; max-width: 500px; padding: 15px; box-sizing: border-box; }
+        :root {
+            --gold: #C59D5F;       
+            --text-dark: #1a1a1a;  
+            --bg-cream: #FDFBF7;   
+            --bg-outer: #E8E4D9;
+            --success: #4caf50;
+            --error: #f44336;
+            --warning: #ff9800;
+        }
+
+        body { 
+            font-family: 'Montserrat', sans-serif; 
+            background: var(--bg-outer); 
+            color: var(--text-dark); 
+            margin: 0; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            min-height: 100vh; 
+        }
+
+        .container { 
+            width: 100%; 
+            max-width: 500px; 
+            padding: 15px; 
+            box-sizing: border-box; 
+            background: var(--bg-cream);
+            min-height: 100vh;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
         
+        h2.title {
+            text-align: center; 
+            color: var(--gold); 
+            font-family: 'Cinzel', serif; 
+            margin: 10px 0 20px;
+            font-size: 1.5rem;
+            border-bottom: 1px solid var(--gold);
+            padding-bottom: 10px;
+        }
+
         /* Tabs */
-        .tabs { display: flex; margin-bottom: 15px; background: #222; border-radius: 10px; padding: 4px; }
-        .tab { flex: 1; padding: 12px; text-align: center; cursor: pointer; border-radius: 8px; color: #888; font-weight: 600; }
-        .tab.active { background: #333; color: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
+        .tabs { display: flex; margin-bottom: 15px; gap: 10px; }
+        .tab { 
+            flex: 1; padding: 12px; text-align: center; cursor: pointer; 
+            border-radius: 8px; font-weight: 600; font-size: 0.9rem;
+            border: 1px solid var(--gold); color: var(--text-dark);
+            transition: 0.3s;
+        }
+        .tab.active { background: var(--gold); color: white; }
 
         /* Views */
         #scanner-view, #search-view { display: none; }
         .active-view { display: block !important; }
 
         /* Scanner UI */
-        #reader { width: 100%; border-radius: 12px; overflow: hidden; background: #000; border: 1px solid #333; min-height: 300px; }
+        #reader { 
+            width: 100%; border-radius: 12px; overflow: hidden; 
+            background: #000; border: 2px solid var(--gold); min-height: 300px; 
+        }
         
         /* Search UI */
         .search-box { display: flex; gap: 10px; margin-bottom: 20px; }
-        input { flex: 1; padding: 15px; border-radius: 8px; border: none; font-size: 1rem; background: #222; color: white; outline: none; }
-        .btn-search { padding: 0 20px; background: #B8860B; border: none; border-radius: 8px; color: white; cursor: pointer; font-weight: bold; }
+        input { 
+            flex: 1; padding: 15px; border-radius: 8px; border: 1px solid #ccc; 
+            font-size: 1rem; outline: none; font-family: 'Montserrat', sans-serif;
+        }
+        .btn-action { 
+            padding: 0 20px; background: var(--text-dark); border: none; 
+            border-radius: 8px; color: var(--gold); cursor: pointer; font-weight: bold; 
+        }
         
-        .result-item { background: #222; padding: 15px; margin-bottom: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #333; }
-        .btn-in { background: #4CAF50; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
-        .btn-in:disabled { background: #444; color: #888; cursor: not-allowed; }
+        .result-item { 
+            background: white; padding: 15px; margin-bottom: 10px; border-radius: 8px; 
+            display: flex; justify-content: space-between; align-items: center; 
+            border: 1px solid #eee; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .btn-in { 
+            background: var(--gold); color: white; border: none; 
+            padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; 
+        }
+        .btn-in:disabled { background: #ccc; cursor: not-allowed; }
 
-        /* Results Display */
-        #scan-result { margin-top: 15px; padding: 20px; border-radius: 10px; text-align: center; font-weight: bold; font-size: 1.2rem; display: none; }
-        .success { background: #e8f5e9; color: #2e7d32; border: 2px solid #4CAF50; }
-        .denied { background: #ffebee; color: #c62828; border: 2px solid #e57373; }
-        .already { background: #fff8e1; color: #f57f17; border: 2px solid #ffb74d; }
+        /* Results Alert */
+        #scan-result { 
+            margin-top: 15px; padding: 20px; border-radius: 10px; 
+            text-align: center; font-weight: bold; font-size: 1.1rem; display: none; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .success { background: #e8f5e9; color: var(--success); border: 1px solid var(--success); }
+        .denied { background: #ffebee; color: var(--error); border: 1px solid var(--error); }
+        .already { background: #fff8e1; color: var(--warning); border: 1px solid var(--warning); }
 
-        .stats { display: flex; justify-content: space-between; margin-top: 20px; background: #222; padding: 15px; border-radius: 10px; font-size: 0.9rem; border: 1px solid #333; }
-        .start-btn { width:100%; padding:15px; margin-top:10px; background:#333; color:white; border:none; border-radius:8px; font-weight:bold; font-size:1rem; cursor:pointer; }
+        /* Stats & Logs */
+        .stats-bar { 
+            display: flex; justify-content: space-between; margin-top: 20px; 
+            background: var(--text-dark); color: var(--bg-cream); 
+            padding: 15px; border-radius: 8px; font-size: 0.9rem; 
+        }
+
+        .history-section { margin-top: 30px; }
+        .history-title { font-size: 0.8rem; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; border-bottom: 1px solid #ddd;}
+        .log-item { 
+            font-size: 0.85rem; padding: 10px 0; border-bottom: 1px dashed #ddd; display: flex; justify-content: space-between;
+        }
+        .log-time { color: #999; font-size: 0.75rem; }
+
+        .start-btn { width:100%; padding:15px; margin-top:10px; background:var(--gold); color:white; border:none; border-radius:8px; font-weight:bold; font-size:1rem; cursor:pointer; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2 style="text-align:center; color:#B8860B; margin: 5px 0 15px;">ACCESO BODA</h2>
+    <h2 class="title">CHECK-IN P&J</h2>
     
     <div class="tabs">
-        <div class="tab active" onclick="switchTab('scanner')">📸 Escáner</div>
+        <div class="tab active" onclick="switchTab('scanner')">📷 Escáner</div>
         <div class="tab" onclick="switchTab('search')">🔍 Buscar</div>
     </div>
 
@@ -57,17 +138,23 @@
     <div id="search-view">
         <div class="search-box">
             <input type="text" id="search-input" placeholder="Buscar apellido...">
-            <button class="btn-search" onclick="manualSearch()">IR</button>
+            <button class="btn-action" onclick="manualSearch()">IR</button>
         </div>
         <div id="search-results"></div>
     </div>
 
     <div id="scan-result"></div>
 
-    <div class="stats">
-        <span>Total: <b id="total">0</b></span>
-        <span>Dentro: <b id="success">0</b></span>
-        <button onclick="resetStats()" style="background:transparent; border:none; color:#666;">🗑️</button>
+    <div class="stats-bar">
+        <span>Entradas Hoy: <b id="total" style="color:var(--gold); font-size:1.2rem;">0</b></span>
+        <button onclick="resetStats()" style="background:transparent; border:none; color:#666; cursor:pointer;">🗑️</button>
+    </div>
+
+    <div class="history-section">
+        <div class="history-title">Últimos Ingresos</div>
+        <div id="recent-logs">
+            <div style="text-align:center; color:#ccc; padding:10px;">Esperando invitados...</div>
+        </div>
     </div>
 </div>
 
@@ -86,7 +173,7 @@
             document.querySelector('.tab:last-child').classList.add('active');
             document.getElementById('search-view').classList.add('active-view');
             if(typeof html5QrcodeScanner !== 'undefined' && html5QrcodeScanner) {
-                html5QrcodeScanner.pause();
+                try { html5QrcodeScanner.pause(); } catch(e){}
             }
         }
     }
